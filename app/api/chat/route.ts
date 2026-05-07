@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { chatRequestSchema } from "@/lib/validations";
 import { chatRateLimit, getClientIp } from "@/lib/rate-limit";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const SYSTEM_PROMPT = `You are an AI assistant for a Software Development Engineer's portfolio. 
 You answer questions about their skills, projects, and experience concisely. 
