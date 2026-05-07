@@ -59,6 +59,11 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error("[/api/tts]", err);
-    return NextResponse.json({ error: "TTS failed" }, { status: 500 });
+    const status =
+      err instanceof Error && err.message.includes("Status code: 401")
+        ? 401
+        : 500;
+
+    return NextResponse.json({ error: "TTS failed" }, { status });
   }
 }

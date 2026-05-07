@@ -81,6 +81,11 @@ export default function Chatbot() {
     if (muted || !text.trim()) return;
     const speechText = text.trim().slice(0, 500);
 
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      speakWithBrowserVoice(speechText);
+      return;
+    }
+
     try {
       const res = await fetch("/api/tts", {
         method: "POST",
