@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+Disallow: /api/
+
+Host: https://shruutee.github.io/3d-portfolio
+Sitemap: https://shruutee.github.io/3d-portfolio/sitemap.xml
