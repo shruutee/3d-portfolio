@@ -11,12 +11,10 @@ import Projects from "@/components/sections/Projects";
 import Experience from "@/components/sections/Experience";
 import Contact from "@/components/sections/Contact";
 import SiteLoader from "@/components/ui/SiteLoader";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
-// Lazy-load heavy client widgets
+// Lazy-load the assistant after the main page becomes interactive.
 const Chatbot = dynamic(() => import("@/components/ui/Chatbot"), { ssr: false });
-const CustomCursor = dynamic(() => import("@/components/ui/CustomCursor"), {
-  ssr: false,
-});
 
 export default function Home() {
   const [showLoader, setShowLoader] = useState(true);
@@ -64,10 +62,9 @@ export default function Home() {
       <Experience />
       <Contact />
       {loadExtras && (
-        <>
+        <ErrorBoundary fallback={null}>
           <Chatbot />
-          <CustomCursor />
-        </>
+        </ErrorBoundary>
       )}
     </>
   );
