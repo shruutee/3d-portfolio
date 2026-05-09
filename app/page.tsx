@@ -1,8 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
@@ -13,25 +11,14 @@ import Contact from "@/components/sections/Contact";
 import SiteLoader from "@/components/ui/SiteLoader";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
-// Lazy-load the assistant after the main page becomes interactive.
-const Chatbot = dynamic(() => import("@/components/ui/Chatbot"), { ssr: false });
-
 export default function Home() {
   const [showLoader, setShowLoader] = useState(true);
-  const [loadExtras, setLoadExtras] = useState(false);
 
   useEffect(() => {
     const loaderTimer = window.setTimeout(() => setShowLoader(false), 1200);
-    const idle = window.requestIdleCallback?.(
-      () => setLoadExtras(true),
-      { timeout: 2500 }
-    );
-    const extrasTimer = window.setTimeout(() => setLoadExtras(true), 2800);
 
     return () => {
       window.clearTimeout(loaderTimer);
-      window.clearTimeout(extrasTimer);
-      if (idle) window.cancelIdleCallback(idle);
     };
   }, []);
 
@@ -54,18 +41,27 @@ export default function Home() {
   return (
     <>
       <SiteLoader show={showLoader} />
-      <Navbar />
-      <Hero stars={stars} />
-      <About />
-      <Skills />
-      <Projects />
-      <Experience />
-      <Contact />
-      {loadExtras && (
-        <ErrorBoundary fallback={null}>
-          <Chatbot />
-        </ErrorBoundary>
-      )}
+      <ErrorBoundary fallback={null}>
+        <Navbar />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <Hero stars={stars} />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <About />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <Skills />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <Projects />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <Experience />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <Contact />
+      </ErrorBoundary>
     </>
   );
 }

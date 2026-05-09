@@ -10,8 +10,10 @@ import {
 import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 function Water({ active }: { active: boolean }) {
-  const { scene, animations } = useGLTF("/models/water.glb");
+  const { scene, animations } = useGLTF(`${BASE_PATH}/models/water.glb`);
   const { actions } = useAnimations(animations, scene);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ function Water({ active }: { active: boolean }) {
 }
 
 function FloatingRobot({ active }: { active: boolean }) {
-  const { scene, animations } = useGLTF("/models/robot.glb");
+  const { scene, animations } = useGLTF(`${BASE_PATH}/models/robot.glb`);
   const { actions } = useAnimations(animations, scene);
   const ref = useRef<THREE.Group>(null);
 
@@ -113,5 +115,5 @@ export default function WaterScene({ height = 600, active = true }: Props) {
   );
 }
 
-useGLTF.preload("/models/water.glb");
-useGLTF.preload("/models/robot.glb");
+useGLTF.preload(`${BASE_PATH}/models/water.glb`);
+useGLTF.preload(`${BASE_PATH}/models/robot.glb`);

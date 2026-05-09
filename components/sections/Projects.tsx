@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import TiltCard from "@/components/ui/TiltCard";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const WaterScene = dynamic(() => import("@/components/3d/WaterScene"), {
   ssr: false,
@@ -77,7 +78,9 @@ function LazyWaterScene() {
   return (
     <div ref={ref} className="h-[600px] w-full">
       {visible ? (
-        <WaterScene height={600} active={active} />
+        <ErrorBoundary fallback={<div className="h-full w-full bg-muted/20" aria-hidden />}>
+          <WaterScene height={600} active={active} />
+        </ErrorBoundary>
       ) : (
         <div className="h-full w-full bg-muted/20" aria-hidden />
       )}
@@ -120,7 +123,7 @@ export default function Projects() {
       <section className="py-20">
         <div className="container-apple">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {projects.map((project, i) => (
+            {projects.map((project) => (
               <ScrollReveal key={project.title}>
                 <TiltCard>
                   <article

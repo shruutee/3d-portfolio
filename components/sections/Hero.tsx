@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowDown, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const Model3D = dynamic(() => import("@/components/3d/Model3D"), {
   ssr: false,
@@ -147,17 +148,19 @@ export default function Hero({ stars }: { stars: Star[] }) {
           className="h-[420px] lg:h-[600px]"
         >
           {loadRobot ? (
-            <Model3D
-              path={`${BASE_PATH}/models/robot.glb`}
-              scale={1.8}
-              height={600}
-              followCursor
-              cameraPosition={[0, 0, 5.4]}
-              floatEnabled
-              animationSpeed={0.35}
-              floatSpeed={0.65}
-              pauseWhenOffscreen
-            />
+            <ErrorBoundary fallback={<RobotPlaceholder />}>
+              <Model3D
+                path={`${BASE_PATH}/models/robot.glb`}
+                scale={1.8}
+                height={600}
+                followCursor
+                cameraPosition={[0, 0, 5.4]}
+                floatEnabled
+                animationSpeed={0.35}
+                floatSpeed={0.65}
+                pauseWhenOffscreen
+              />
+            </ErrorBoundary>
           ) : (
             <RobotPlaceholder />
           )}
