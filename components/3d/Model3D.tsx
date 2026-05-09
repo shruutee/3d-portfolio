@@ -39,14 +39,19 @@ function Model({
   const ref = useRef<THREE.Group>(null);
   const mouse = useRef({ x: 0, y: 0 });
 
-  // Center model
   useEffect(() => {
     const box = new THREE.Box3().setFromObject(scene);
     const center = box.getCenter(new THREE.Vector3());
     scene.position.sub(center);
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.frustumCulled = true;
+        child.castShadow = false;
+        child.receiveShadow = false;
+      }
+    });
   }, [scene]);
 
-  // Play first animation
   useEffect(() => {
     const first = Object.values(actions)[0];
     if (first) {
@@ -59,7 +64,6 @@ function Model({
     };
   }, [actions, animationSpeed, active]);
 
-  // Cursor follow
   useEffect(() => {
     if (!followCursor) return;
     const onMove = (e: MouseEvent) => {
@@ -122,7 +126,7 @@ export default function Model3D({
   floatSpeed = 0.75,
   pauseWhenOffscreen = false,
 }: Model3DProps) {
-  const [dpr, setDpr] = useState<[number, number]>([1, 1]);
+  const [dpr, setDpr] = useState<[number, number]>([1, 1.35]);
   const [active, setActive] = useState(!pauseWhenOffscreen);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -152,12 +156,19 @@ export default function Model3D({
         camera={{ position: cameraPosition, fov: 45 }}
         dpr={dpr}
         frameloop={active ? "always" : "demand"}
-        gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
+        gl={{
+          alpha: true,
+          antialias: false,
+          depth: true,
+          powerPreference: "high-performance",
+          stencil: false,
+        }}
         style={{ background: "transparent" }}
       >
         <PerformanceMonitor
-          onDecline={() => setDpr([1, 1])}
-          onIncline={() => setDpr([1, 1])}
+          flipflops={2}
+          onDecline={() => setDpr([0.85, 1])}
+          onIncline={() => setDpr([1, 1.35])}
         />
         <ambientLight intensity={1.2} />
         <directionalLight position={[5, 5, 5]} intensity={1.4} />

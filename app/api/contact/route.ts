@@ -5,6 +5,7 @@ import { contactFormSchema } from "@/lib/validations";
 export const runtime = "nodejs";
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
+const DEFAULT_CONTACT_EMAIL = "shruti100905@gmail.com";
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);
@@ -33,14 +34,15 @@ export async function POST(request: Request) {
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL;
+  const to = process.env.CONTACT_TO_EMAIL ?? DEFAULT_CONTACT_EMAIL;
   const from = process.env.CONTACT_FROM_EMAIL ?? "Portfolio <onboarding@resend.dev>";
 
-  if (!apiKey || !to) {
+  if (!apiKey) {
     return NextResponse.json(
       {
         error:
-          "Contact email is not configured yet. Set RESEND_API_KEY and CONTACT_TO_EMAIL.",
+          "Contact email service is not configured yet. Opening your email app is the fastest fallback.",
+        fallbackEmail: to,
       },
       { status: 503 }
     );

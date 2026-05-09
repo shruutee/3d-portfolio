@@ -7,7 +7,9 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import "./globals.css";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://yourdomain.com";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://3d-shruti-sharma-portfolio.github.io";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

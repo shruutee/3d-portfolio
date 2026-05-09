@@ -13,6 +13,24 @@ interface Message {
 
 const MAX_MESSAGES = 10;
 
+function localPortfolioReply(input: string) {
+  const text = input.toLowerCase();
+
+  if (text.includes("project")) {
+    return "Shruti builds polished web experiences with React, Next.js, TypeScript, 3D UI, and AI features. Explore the Projects section for examples.";
+  }
+
+  if (text.includes("skill") || text.includes("tech") || text.includes("stack")) {
+    return "Shruti works with Java, DSA, React, Next.js, TypeScript, AI integrations, and modern frontend engineering.";
+  }
+
+  if (text.includes("contact") || text.includes("email") || text.includes("hire")) {
+    return "You can contact Shruti from the Contact section or directly at shruti100905@gmail.com.";
+  }
+
+  return "Hi, I am Shruti's portfolio assistant. Ask me about her skills, projects, experience, or contact details.";
+}
+
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -74,6 +92,12 @@ export default function Chatbot() {
     utterance.rate = 1;
     utterance.pitch = 1;
     utterance.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const voice =
+      voices.find((item) => item.lang.startsWith("en") && item.name.toLowerCase().includes("female")) ??
+      voices.find((item) => item.lang.startsWith("en")) ??
+      voices[0];
+    if (voice) utterance.voice = voice;
     window.speechSynthesis.speak(utterance);
   }
 
@@ -137,35 +161,23 @@ export default function Chatbot() {
         if (res.status === 429) {
           toast.error("Rate limit reached. Try again later.");
         } else {
-          toast.error("Failed to send message.");
+          const reply = localPortfolioReply(text);
+          setMessages([...next, { role: "assistant", content: reply }]);
+          void speak(reply);
+          toast.message("Using offline chat mode.");
         }
-        setMessages(next);
         return;
       }
 
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error("No reader");
-      const decoder = new TextDecoder();
-      let full = "";
-
-      // Add empty assistant message
-      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        full += decoder.decode(value, { stream: true });
-        setMessages((prev) => [
-          ...prev.slice(0, -1),
-          { role: "assistant", content: full },
-        ]);
-      }
-
-      // Speak the full response
+      const full = await res.text();
+      setMessages((prev) => [...prev, { role: "assistant", content: full }]);
       void speak(full);
     } catch (err) {
       console.error("[chat]", err);
-      toast.error("Something went wrong.");
+      const reply = localPortfolioReply(text);
+      setMessages([...next, { role: "assistant", content: reply }]);
+      void speak(reply);
+      toast.message("Using offline chat mode.");
     } finally {
       setLoading(false);
     }
@@ -225,7 +237,9 @@ export default function Chatbot() {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold">Shruti&apos;s AI</p>
-                <p className="text-[11px] text-emerald-500">Online</p>
+                <p className="text-[11px] text-emerald-500">
+                  Online {muted ? "" : "with voice"}
+                </p>
               </div>
 
               <button
@@ -276,6 +290,7 @@ export default function Chatbot() {
                 >
                   <div
                     className={cn(
+                      "group relative",
                       "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                       m.role === "user"
                         ? "rounded-br-md bg-gradient-to-br from-primary to-fuchsia-500 text-white"
@@ -288,6 +303,16 @@ export default function Chatbot() {
                         <span className="dot" />
                         <span className="dot" />
                       </span>
+                    )}
+                    {m.role === "assistant" && m.content && (
+                      <button
+                        type="button"
+                        onClick={() => void speak(m.content)}
+                        aria-label="Play assistant voice"
+                        className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background text-muted-foreground opacity-0 shadow-lg transition-opacity hover:text-foreground group-hover:opacity-100 focus:opacity-100"
+                      >
+                        <Volume2 className="h-3.5 w-3.5" />
+                      </button>
                     )}
                   </div>
                 </motion.div>

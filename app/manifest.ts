@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 
+export const dynamic = "force-static";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Your Name — SDE Portfolio",
-    short_name: "Portfolio",
-    description: "Software Development Engineer portfolio",
+    name: "Shruti Sharma - 3D Portfolio",
+    short_name: "Shruti",
+    description: "Shruti Sharma's interactive software engineering portfolio",
     start_url: "/",
     display: "standalone",
     background_color: "#000000",

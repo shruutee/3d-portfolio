@@ -1,7 +1,11 @@
 import type { MetadataRoute } from "next";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://yourdomain.com";
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "https://3d-shruti-sharma-portfolio.github.io";
   const now = new Date();
 
   return [

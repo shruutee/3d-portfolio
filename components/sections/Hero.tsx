@@ -3,11 +3,12 @@
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowDown, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
 const Model3D = dynamic(() => import("@/components/3d/Model3D"), {
   ssr: false,
-  loading: () => <div className="h-[600px] w-full animate-pulse rounded-3xl bg-muted/30" />,
+  loading: () => <RobotPlaceholder />,
 });
 
 interface Star {
@@ -17,7 +18,39 @@ interface Star {
   opacity: number;
 }
 
+function RobotPlaceholder() {
+  return (
+    <div className="relative flex h-[420px] w-full items-center justify-center overflow-hidden rounded-[2rem] border border-border/60 bg-background/30 backdrop-blur-xl lg:h-[560px]">
+      <div className="absolute h-48 w-48 rounded-full bg-primary/15 blur-3xl" />
+      <div className="relative flex flex-col items-center gap-4 text-center">
+        <div className="loader scale-110" aria-hidden="true">
+          <span className="bar" />
+          <span className="bar" />
+          <span className="bar" />
+          <span className="bar" />
+        </div>
+        <p className="text-xs font-medium uppercase tracking-[0.28em] text-muted-foreground">
+          Warming up 3D
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function Hero({ stars }: { stars: Star[] }) {
+  const [loadRobot, setLoadRobot] = useState(false);
+
+  useEffect(() => {
+    const load = () => setLoadRobot(true);
+    const idle = window.requestIdleCallback?.(load, { timeout: 900 });
+    const timer = window.setTimeout(load, 1200);
+
+    return () => {
+      window.clearTimeout(timer);
+      if (idle) window.cancelIdleCallback(idle);
+    };
+  }, []);
+
   return (
     <section
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
@@ -109,19 +142,23 @@ export default function Hero({ stars }: { stars: Star[] }) {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="h-[500px] lg:h-[600px]"
+          className="h-[420px] lg:h-[600px]"
         >
-          <Model3D
-            path="/models/robot.glb"
-            scale={1.8}
-            height={600}
-            followCursor
-            cameraPosition={[0, 0, 5.4]}
-            floatEnabled
-            animationSpeed={0.35}
-            floatSpeed={0.65}
-            pauseWhenOffscreen
-          />
+          {loadRobot ? (
+            <Model3D
+              path="/models/robot.glb"
+              scale={1.8}
+              height={600}
+              followCursor
+              cameraPosition={[0, 0, 5.4]}
+              floatEnabled
+              animationSpeed={0.35}
+              floatSpeed={0.65}
+              pauseWhenOffscreen
+            />
+          ) : (
+            <RobotPlaceholder />
+          )}
         </motion.div>
       </div>
 

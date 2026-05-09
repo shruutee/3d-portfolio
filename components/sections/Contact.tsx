@@ -32,6 +32,21 @@ const contactLinks = [
   },
 ];
 
+const CONTACT_EMAIL = "shruti100905@gmail.com";
+
+function buildMailtoUrl(data: ContactForm) {
+  const subject = encodeURIComponent(`Portfolio contact from ${data.name}`);
+  const body = encodeURIComponent(
+    [`Name: ${data.name}`, `Email: ${data.email}`, "", data.message].join("\n")
+  );
+
+  return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function openMailDraft(data: ContactForm) {
+  window.open(buildMailtoUrl(data), "_self");
+}
+
 export default function Contact() {
   const {
     register,
@@ -52,6 +67,13 @@ export default function Contact() {
 
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as { error?: string } | null;
+        if (res.status === 404 || res.status === 503) {
+          openMailDraft(data);
+          toast.message("Opening your email app.", {
+            description: "Your message has been prepared so you can send it directly.",
+          });
+          return;
+        }
         throw new Error(body?.error ?? "Unable to send message.");
       }
 
@@ -60,9 +82,12 @@ export default function Contact() {
       });
       reset();
     } catch (error) {
+      openMailDraft(data);
       toast.error("Message could not be sent.", {
         description:
-          error instanceof Error ? error.message : "Please try again in a moment.",
+          error instanceof Error
+            ? `${error.message} I opened your email app as a fallback.`
+            : "I opened your email app as a fallback.",
       });
     }
   };

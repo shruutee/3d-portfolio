@@ -9,6 +9,24 @@ const SYSTEM_PROMPT = `You are an AI assistant for a Software Development Engine
 You answer questions about their skills, projects, and experience concisely. 
 Keep answers under 120 words. Be friendly, sharp, and professional.`;
 
+function localPortfolioReply(input: string) {
+  const text = input.toLowerCase();
+
+  if (text.includes("project")) {
+    return "Shruti builds polished web experiences with React, Next.js, TypeScript, 3D UI, and AI features. You can explore the Projects section for the strongest examples and use the contact form to discuss a specific opportunity.";
+  }
+
+  if (text.includes("skill") || text.includes("tech") || text.includes("stack")) {
+    return "Shruti's core stack includes Java, DSA, React, Next.js, TypeScript, AI integrations, and modern frontend engineering. She focuses on clean UI, performance, and thoughtful user experience.";
+  }
+
+  if (text.includes("contact") || text.includes("email") || text.includes("hire")) {
+    return "You can contact Shruti through the form on this page or directly at shruti100905@gmail.com. She is open to internships, collaborations, and software engineering opportunities.";
+  }
+
+  return "Hi, I am Shruti's portfolio assistant. Ask me about her skills, projects, experience, or how to contact her, and I will keep it concise.";
+}
+
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
@@ -27,7 +45,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid request", details: parsed.error.flatten() }, { status: 400 });
     }
 
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      const last = parsed.data.messages.at(-1)?.content ?? "";
+      return new Response(localPortfolioReply(last), {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-cache",
+        },
+      });
+    }
+
+    const anthropic = new Anthropic({ apiKey });
 
     const stream = await anthropic.messages.stream({
       model: "claude-3-5-sonnet-20241022",
