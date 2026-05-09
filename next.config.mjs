@@ -8,6 +8,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isGithubPages = process.env.GITHUB_PAGES === "true";
+const githubPagesBasePath = process.env.GITHUB_PAGES_BASE_PATH ?? "";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -16,6 +17,8 @@ const nextConfig = {
   compress: true,
   output: isGithubPages ? "export" : undefined,
   trailingSlash: isGithubPages,
+  basePath: isGithubPages && githubPagesBasePath ? githubPagesBasePath : undefined,
+  assetPrefix: isGithubPages && githubPagesBasePath ? githubPagesBasePath : undefined,
   turbopack: {
     root: __dirname,
   },

@@ -11,6 +11,8 @@ import {
 import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 interface ModelProps {
   path: string;
   scale?: number;
@@ -206,4 +208,4 @@ export default function Model3D({
 }
 
 // Preload (call in pages that use it for instant load)
-useGLTF.preload("/models/robot.glb");
+useGLTF.preload(`${BASE_PATH}/models/robot.glb`);

@@ -33,6 +33,7 @@ const contactLinks = [
 ];
 
 const CONTACT_EMAIL = "shruti100905@gmail.com";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 function buildMailtoUrl(data: ContactForm) {
   const subject = encodeURIComponent(`Portfolio contact from ${data.name}`);
@@ -118,7 +119,7 @@ export default function Contact() {
           {contactLinks.map(({ href, label, icon: Icon }) => (
             <a
               key={label}
-              href={href}
+              href={href.startsWith("/") ? `${BASE_PATH}${href}` : href}
               target={href.startsWith("http") ? "_blank" : undefined}
               rel={href.startsWith("http") ? "noreferrer" : undefined}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-card/40 px-4 py-2 text-xs font-medium backdrop-blur-xl transition-colors hover:bg-accent"

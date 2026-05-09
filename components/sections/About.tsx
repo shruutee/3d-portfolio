@@ -13,7 +13,10 @@ const stats = [
   { num: "Now", label: "Learning DSA", icon: "DS" },
 ];
 
-const photoSources = ["/profile.jpg", "/profile.png", "/profile.webp"];
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+const photoSources = ["/profile.jpg", "/profile.png", "/profile.webp"].map(
+  (src) => `${BASE_PATH}${src}`
+);
 
 export default function About() {
   const [photoIndex, setPhotoIndex] = useState(0);

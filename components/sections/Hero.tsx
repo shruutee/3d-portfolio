@@ -11,6 +11,8 @@ const Model3D = dynamic(() => import("@/components/3d/Model3D"), {
   loading: () => <RobotPlaceholder />,
 });
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 interface Star {
   left: number;
   top: number;
@@ -146,7 +148,7 @@ export default function Hero({ stars }: { stars: Star[] }) {
         >
           {loadRobot ? (
             <Model3D
-              path="/models/robot.glb"
+              path={`${BASE_PATH}/models/robot.glb`}
               scale={1.8}
               height={600}
               followCursor
